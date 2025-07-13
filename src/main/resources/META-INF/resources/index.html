@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-main: #1e1e1e;
+      --bg-sidebar: #2c2c2c;
+      --bg-hover: #3a3a3a;
+      --bg-accent: #007acc;
+      --text-main: #e0e0e0;
+      --text-muted: #bbbbbb;
+      --border-color: #444;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    #sidebar {
+      width: 20%;
+      min-width: 200px;
+      background-color: var(--bg-sidebar);
+      padding: 1em;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-color);
+      box-sizing: border-box;
+    }
+
+    #content {
+      flex: 1;
+      padding: 2em;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 1.8em;
+      margin-top: 0;
+      color: var(--text-main);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      margin-bottom: 0.5em;
+    }
+
+    a {
+      display: block;
+      padding: 0.6em 0.8em;
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--text-main);
+      background-color: transparent;
+      transition: background 0.2s;
+      font-size: 1em;
+      font-weight: bold;
+    }
+
+    a:hover {
+      background-color: var(--bg-hover);
+    }
+
+    a.active {
+      background-color: var(--bg-accent);
+      color: #ffffff;
+    }
+
+    #recipe-content {
+      background: #111;
+      padding: 1em;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-size: 1.2em;
+      color: var(--text-muted);
+
+      table {
+        border-collapse: collapse;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr:not(:last-child) td {
+        border-bottom: 1px solid;
+      }
+
+      td {
+        padding: 5px;
+      }
+
+      td:nth-child(2) {
+        padding-left: 30px;
+      }
+
+      p {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+    }
+
+    #search {
+      margin-bottom: 1em;
+      width: 100%;
+      padding: 0.6em;
+      font-size: 1em;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: #1a1a1a;
+      color: var(--text-main);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      #sidebar {
+        width: 100%;
+        min-width: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      #content {
+        padding: 1em;
+      }
+
+      a {
+        font-size: 1.1em;
+        padding: 0.8em;
+      }
+
+      pre {
+        font-size: 1em;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h1>Rezepte</h1>
+  <input type="text" id="search" placeholder="Rezepte suchen..." />
+  <ul id="recipe-list">Loading...</ul>
+</div>
+
+<div id="content">
+  <div id="recipe-content">Wähle ein Rezept aus der Liste aus um es anzuzeigen.</div>
+</div>
+
+<script>
+  let allRecipes = [];
+  let currentRecipe = null;
+
+  function loadRecipeList() {
+    fetch('/recipes')
+      .then(response => response.json())
+      .then(data => {
+        allRecipes = data;
+        renderRecipeList(data);
+      })
+      .catch(error => {
+        document.getElementById('recipe-list').textContent = 'Error loading recipes.';
+        console.error(error);
+      });
+  }
+
+  function renderRecipeList(recipes) {
+    const list = document.getElementById('recipe-list');
+    list.innerHTML = '';
+    recipes.forEach(filename => {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.textContent = filename;
+      link.classList.toggle('active', filename === currentRecipe);
+      link.onclick = () => {
+        currentRecipe = filename;
+        loadRecipe(filename);
+        renderRecipeList(allRecipes); // refresh active state
+      };
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+  }
+
+  function loadRecipe(filename) {
+    fetch(`/recipes/${encodeURIComponent(filename)}`)
+      .then(response => {
+        if (!response.ok) throw new Error("Not found");
+        return response.text();
+      })
+      .then(html => {
+        document.getElementById('recipe-content').innerHTML = html;
+      })
+      .catch(error => {
+        document.getElementById('recipe-content').textContent = 'Failed to load recipe.';
+        console.error(error);
+      });
+  }
+
+  function setupSearch() {
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = allRecipes.filter(name => name.toLowerCase().includes(query));
+      renderRecipeList(filtered);
+    });
+  }
+
+  loadRecipeList();
+  setupSearch();
+</script>
+
+</body>
+</html>
