@@ -30,6 +30,7 @@ public class TodoResource {
     }
 
     @GET
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("/{filename}")
     public Response getTodo(@PathParam("filename") String filename) {
         try {

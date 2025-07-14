@@ -139,22 +139,6 @@ function debounce(func, delay) {
   };
 }
 
-function sendContentToBackend(content) {
-  fetch('/todos/todo_test', { // TODO change the file name 'todo_test' to the actual file name
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'text/plain'
-    },
-    body: content
-  })
-  .then(response => {
-    if (!response.ok) throw new Error("Failed to save content");
-  })
-  .catch(error => {
-    console.error("Error saving content:", error);
-  });
-}
-
 const debouncedSave = debounce(() => {
   const content = editor.getValue();
   sendContentToBackend(content);
