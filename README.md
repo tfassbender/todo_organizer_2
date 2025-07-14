@@ -1,1 +1,1 @@
-A web based text editor with custom highlighting for TODOs.
+A simple web based text editor with custom highlighting and keyboard shortcuts for TODOs.

@@ -42,8 +42,8 @@ public class TodoResource {
         }
     }
 
-    @POST
-    @Path("{filename}")
+    @PUT
+    @Path("/{filename}")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response saveTodo(@PathParam("filename") String filename, String content) throws IOException {
         System.out.println("TODO - save content to filename: " + filename + " - content: " + content);
