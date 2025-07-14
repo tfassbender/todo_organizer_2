@@ -9,63 +9,40 @@
     <!-- CodeMirror 5 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
     <!-- Optional theme (Monokai) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css" />
-
-    <style>
-        body {
-          margin: 0;
-          padding: 0;
-          background: #1e1e1e;
-          color: #eee;
-          font-family: sans-serif;
-          height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-
-        h1 {
-          padding: 1em;
-          margin: 0;
-          background: #2c2c2c;
-        }
-
-        #editor-wrapper {
-          flex: 1;
-          padding: 1em;
-        }
-
-        .CodeMirror {
-          height: 100%;
-          font-size: 16px;
-        }
-
-        .headline-line {
-          font-size: 2em !important;
-          color: #ffffff !important;
-          font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="editor_highlighting.css" />
 </head>
 <body>
 
 <h1>Simple CodeMirror 5 Editor</h1>
 
 <div id="editor-wrapper">
-    <textarea id="editor"># Hello World
+    <textarea id="editor"># Big headline
+## Smaller headline
+### type 3 headline
+#### type 4 headline
+normal line
+! This is important
+? A question
+/ Done task
+// Comment
+> Output line
+- Struck through
+//- Struck-through comment
 
-This is a note editor using CodeMirror 5.
-You can customize syntax highlighting, keybindings, and more.</textarea>
+</textarea>
 </div>
 
 <!-- CodeMirror core JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-<!-- Optional: Keymaps (Sublime, Vim, etc.) -->
+<!-- Keymaps (Sublime, Vim, etc.) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/keymap/sublime.min.js"></script>
 
 <script>
     const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       mode: 'markdown',
-      theme: 'monokai',
+      theme: 'dracula',
       lineNumbers: true,
       lineWrapping: true,
       keyMap: 'sublime',
@@ -78,28 +55,51 @@ You can customize syntax highlighting, keybindings, and more.</textarea>
       }
     });
 
-    function highlightHeadlines() {
+    function addHighlighting() {
       const totalLines = editor.lineCount();
 
-      // First clear all old styles
       for (let i = 0; i < totalLines; i++) {
-        editor.removeLineClass(i, "wrap", "headline-line");
-      }
+        const line = editor.getLine(i);
+        const trimmed = line.trim();
 
-      // Apply to matching lines
-      for (let i = 0; i < totalLines; i++) {
-        const lineContent = editor.getLine(i);
-        if (/^#/.test(lineContent)) {
-          editor.addLineClass(i, "wrap", "headline-line");
+        // Remove all previously applied custom line classes
+        editor.removeLineClass(i, "wrap", null);
+
+        // Headings
+        if (/^#### /.test(line)) {
+          editor.addLineClass(i, "wrap", "line-headline-4");
+        } else if (/^### /.test(line)) {
+          editor.addLineClass(i, "wrap", "line-headline-3");
+        } else if (/^## /.test(line)) {
+          editor.addLineClass(i, "wrap", "line-headline-2");
+        } else if (/^# /.test(line)) {
+          editor.addLineClass(i, "wrap", "line-headline-1");
+        }
+
+        // Other prefixes (ignore leading whitespace)
+        else if (/^\s*!/.test(line)) {
+          editor.addLineClass(i, "wrap", "line-important");
+        } else if (/^\s*\?/.test(line)) {
+          editor.addLineClass(i, "wrap", "line-question");
+        } else if (/^\s*\/\/\-/.test(line)) {
+          editor.addLineClass(i, "wrap", "line-struck-comment");
+        } else if (/^\s*\/\/ /.test(line)) {
+          editor.addLineClass(i, "wrap", "line-comment");
+        } else if (/^\s*\/ /.test(line)) {
+          editor.addLineClass(i, "wrap", "line-done");
+        } else if (/^\s*>/.test(line)) {
+          editor.addLineClass(i, "wrap", "line-result");
+        } else if (/^\s*-/.test(line)) {
+          editor.addLineClass(i, "wrap", "line-struck");
         }
       }
     }
 
     // Run on load
-    highlightHeadlines();
+    addHighlighting();
 
     // Run on change
-    editor.on("change", highlightHeadlines);
+    editor.on("change", addHighlighting);
 </script>
 
 </body>

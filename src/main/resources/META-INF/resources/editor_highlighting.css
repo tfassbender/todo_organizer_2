@@ -1,0 +1,55 @@
+.line-headline-1 {
+  font-size: 40px !important;
+  color: #e3e3e3 !important;
+  font-weight: bold;
+}
+
+.line-headline-2 {
+  font-size: 30px !important;
+  color: #e3e3e3 !important;
+  font-weight: bold;
+}
+
+.line-headline-3 {
+  font-size: 24px !important;
+  color: #e3e3e3 !important;
+  font-weight: bold;
+}
+
+.line-headline-4 {
+  font-size: 20px !important;
+  color: #e3e3e3 !important;
+  font-weight: bold;
+}
+
+.line-important {
+  color: #ff0000 !important;
+}
+
+.line-question {
+  color: #0088ff !important;
+  font-style: italic;
+}
+
+.line-done {
+  color: #335533 !important;
+}
+
+.line-comment {
+  color: #888888 !important;
+}
+
+.line-result {
+  color: #8888cc !important;
+}
+
+.line-struck {
+  text-decoration: line-through;
+  color: #bbbbbb !important;
+}
+
+.line-struck-comment {
+  text-decoration: line-through;
+  color: #888888 !important;
+  font-style: italic;
+}
