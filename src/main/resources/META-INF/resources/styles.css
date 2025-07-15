@@ -44,10 +44,16 @@ h1.list-title {
 }
 
 #file-list .file-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  margin-bottom: 5px;
+}
+
+#file-list .file-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
 }
 
 #file-list .file-item:hover {
@@ -58,4 +64,3 @@ h1.list-title {
   background-color: #555;
   font-weight: bold;
 }
-

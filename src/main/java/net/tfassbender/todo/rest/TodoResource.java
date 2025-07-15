@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import net.tfassbender.todo.analyzer.TodoFileAnalyzer;
 import net.tfassbender.todo.dto.TodoFileDto;
 import net.tfassbender.todo.service.TodoService;
 
@@ -46,8 +47,11 @@ public class TodoResource {
   @Consumes(MediaType.TEXT_PLAIN)
   public Response saveTodo(@PathParam("filename") String filename, String content) {
     try {
-      service.saveTodoFile(new TodoFileDto(filename, content));
-      return Response.ok().build();
+      TodoFileDto dto = new TodoFileDto(filename, content);
+      service.saveTodoFile(dto);
+      TodoFileAnalyzer.addIcon(dto); // analyze the icon to send it back updated
+      dto.content = null; // Clear content to avoid sending it back
+      return Response.ok(dto).build();
     }
     catch (IOException e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to save todo: " + e.getMessage()).build();

@@ -9,8 +9,21 @@ function loadFileList() {
 
       files.forEach(file => {
         const item = document.createElement('div');
-        item.className = 'file-item';
-        item.textContent = file.filename;
+        item.className = `file-item data-filename-${file.filename}`;
+
+        // Create icon img element if icon is provided
+        if (file.icon) {
+          const icon = document.createElement('img');
+          icon.src = `/icons/${file.icon}`;
+          icon.alt = 'icon';
+          icon.className = 'file-icon';
+          item.appendChild(icon);
+        }
+
+        // Add text content
+        const text = document.createElement('span');
+        text.textContent = file.filename;
+        item.appendChild(text);
 
         item.addEventListener('click', () => {
           selectFile(file);
@@ -21,6 +34,7 @@ function loadFileList() {
     })
     .catch(err => console.error('Error loading file list:', err));
 }
+
 
 function selectFile(file) {
   if (currentFile != null && file.filename === currentFile.filename) return;
@@ -60,10 +74,19 @@ function sendContentToBackend(content) {
   })
   .then(response => {
     if (!response.ok) throw new Error("Failed to save content");
+    return response.json(); // Expecting a TodoFileDto with updated icon
+  })
+  .then(dto => {
+    // Update the icon in the file list UI
+    const fileItem = document.querySelector(`.file-item.data-filename-${dto.filename}`);
+    if (fileItem && dto.icon) {
+      fileItem.querySelector('.file-icon').src = "icons/" + dto.icon;
+    }
   })
   .catch(error => {
     console.error("Error saving content:", error);
   });
 }
+
 
 loadFileList();

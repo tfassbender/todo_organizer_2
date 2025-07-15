@@ -26,7 +26,7 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
       toggleLinePrefix(cm, '! ');
       return true; // Prevent default behavior
     },
-    'Ctrl-Alt-Q': function(cm) {
+    'Ctrl-Alt-A': function(cm) {
       toggleLinePrefix(cm, '? ');
       return true; // Prevent default behavior
     },

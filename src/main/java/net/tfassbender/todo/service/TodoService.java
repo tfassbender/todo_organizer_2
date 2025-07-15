@@ -1,6 +1,7 @@
 package net.tfassbender.todo.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import net.tfassbender.todo.analyzer.TodoFileAnalyzer;
 import net.tfassbender.todo.dto.TodoFileDto;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -31,8 +32,16 @@ public class TodoService {
               .filter(p -> p.getFileName().toString().toLowerCase().endsWith(FILE_EXTENSION)) //
               .map(p -> p.getFileName().toString()) //
               .map(name -> name.substring(0, name.length() - FILE_EXTENSION.length())) //
-              .map(TodoFileDto::new) //
               .sorted() //
+              .map(filename -> {
+                try {
+                  return readTodoFile(filename);
+                }
+                catch (IOException e) {
+                  throw new RuntimeException("Failed to read todo file: " + filename, e);
+                }
+              }) //
+              .map(TodoFileAnalyzer::addIcon) //
               .toList();
     }
   }
