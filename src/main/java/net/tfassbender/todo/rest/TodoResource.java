@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import net.tfassbender.todo.dto.TodoFileDto;
 import net.tfassbender.todo.service.TodoService;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class TodoResource {
   @GET
   public Response listTodos() {
     try {
-      List<String> files = service.listTodoFiles();
+      List<TodoFileDto> files = service.listTodoFiles();
       return Response.ok(files).build();
     }
     catch (IOException e) {
@@ -29,12 +30,11 @@ public class TodoResource {
   }
 
   @GET
-  @Produces(MediaType.TEXT_PLAIN)
   @Path("/{filename}")
   public Response getTodo(@PathParam("filename") String filename) {
     try {
-      String content = service.readTodoFile(filename);
-      return Response.ok(content).type(MediaType.TEXT_PLAIN).build();
+      TodoFileDto content = service.readTodoFile(filename);
+      return Response.ok(content).build();
     }
     catch (IOException e) {
       return Response.status(Response.Status.NOT_FOUND).entity("Todo not found: " + e.getMessage()).build();
@@ -44,8 +44,13 @@ public class TodoResource {
   @PUT
   @Path("/{filename}")
   @Consumes(MediaType.TEXT_PLAIN)
-  public Response saveTodo(@PathParam("filename") String filename, String content) throws IOException {
-    System.out.println("TODO - save content to filename: " + filename + " - content: " + content);
-    return Response.ok().build();
+  public Response saveTodo(@PathParam("filename") String filename, String content) {
+    try {
+      service.saveTodoFile(new TodoFileDto(filename, content));
+      return Response.ok().build();
+    }
+    catch (IOException e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to save todo: " + e.getMessage()).build();
+    }
   }
 }

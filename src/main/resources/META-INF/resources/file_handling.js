@@ -7,13 +7,13 @@ function loadFileList() {
       const fileList = document.getElementById('file-list');
       fileList.innerHTML = '';
 
-      files.forEach(filename => {
+      files.forEach(file => {
         const item = document.createElement('div');
         item.className = 'file-item';
-        item.textContent = filename;
+        item.textContent = file.filename;
 
         item.addEventListener('click', () => {
-          selectFile(filename);
+          selectFile(file);
         });
 
         fileList.appendChild(item);
@@ -22,21 +22,28 @@ function loadFileList() {
     .catch(err => console.error('Error loading file list:', err));
 }
 
-function selectFile(filename) {
-  if (filename === currentFile) return;
+function selectFile(file) {
+  if (currentFile != null && file.filename === currentFile.filename) return;
 
-  fetch(`/todos/${filename}`)
-    .then(res => res.text())
-    .then(content => {
-      currentFile = filename;
+  fetch(`/todos/${file.filename}`)
+    .then(res => res.json())
+    .then(dto => {
+      currentFile = dto;
 
+      // Update selection UI
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
       Array.from(document.querySelectorAll('.file-item'))
-        .find(el => el.textContent === filename)
+        .find(el => el.textContent === file.filename)
         ?.classList.add('selected');
 
-      editor.setValue(content);
+      // Update editor content and file title
+      editor.setValue(dto.content);
       addHighlighting();
+
+      const titleEl = document.querySelector('.file-title');
+      if (titleEl) {
+        titleEl.textContent = dto.filename;
+      }
     })
     .catch(err => console.error('Failed to load file:', err));
 }
@@ -44,7 +51,7 @@ function selectFile(filename) {
 function sendContentToBackend(content) {
   if (!currentFile) return;
 
-  fetch(`/todos/${currentFile}`, {
+  fetch(`/todos/${currentFile.filename}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'text/plain'
