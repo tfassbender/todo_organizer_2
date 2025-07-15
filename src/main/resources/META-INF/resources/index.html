@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css"/>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
     <link rel="stylesheet" href="styles.css"/>
     <link rel="stylesheet" href="editor_highlighting.css"/>
 </head>
@@ -20,10 +22,25 @@
         <div id="file-list">
             <!-- Populated via JS -->
         </div>
+
+        <div class="search-wrapper">
+            <div id="search-bar">
+                <label for="search-input"></label>
+                <input type="text" id="search-input" placeholder="Search in TODOs..." />
+                <button id="search-button" class="icon-button">
+                    <i class="search-button-icon fas fa-search"></i>
+                </button>
+                <button id="clear-button" class="icon-button" title="Clear Search">
+                    <i class="clear-search-button-icon fas fa-times"></i>
+                </button>
+            </div>
+            <div id="search-results"></div>
+        </div>
     </div>
 
     <div id="editor-wrapper">
-        <label for="editor"></label><textarea id="editor"></textarea>
+        <label for="editor"></label>
+        <textarea id="editor"></textarea>
     </div>
 </div>
 
@@ -33,6 +50,7 @@
 
 <script src="code_mirror_editor.js"></script>
 <script src="file_handling.js"></script>
+<script src="search.js"></script>
 
 </body>
 </html>

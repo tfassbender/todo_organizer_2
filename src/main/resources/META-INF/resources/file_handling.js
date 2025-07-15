@@ -1,9 +1,11 @@
 let currentFile = null;
+let openedFiles = [];
 
 function loadFileList() {
   fetch('/todos/opened')
     .then(res => res.json())
     .then(files => {
+      openedFiles = files; // Save for later search
       const fileList = document.getElementById('file-list');
       fileList.innerHTML = '';
 
@@ -11,7 +13,6 @@ function loadFileList() {
         const item = document.createElement('div');
         item.className = `file-item data-filename-${file.filename}`;
 
-        // Create icon img element if icon is provided
         if (file.icon) {
           const icon = document.createElement('img');
           icon.src = `/icons/${file.icon}`;
@@ -20,7 +21,6 @@ function loadFileList() {
           item.appendChild(icon);
         }
 
-        // Add text content
         const text = document.createElement('span');
         text.textContent = file.filename;
         item.appendChild(text);
@@ -34,7 +34,6 @@ function loadFileList() {
     })
     .catch(err => console.error('Error loading file list:', err));
 }
-
 
 function selectFile(file) {
   if (currentFile != null && file.filename === currentFile.filename) return;
@@ -82,11 +81,21 @@ function sendContentToBackend(content) {
     if (fileItem && dto.icon) {
       fileItem.querySelector('.file-icon').src = "icons/" + dto.icon;
     }
+
+    // Manually update the content in the openedFiles list
+    const updatedFile = openedFiles.find(f => f.filename === dto.filename);
+    if (updatedFile) {
+      updatedFile.content = content;
+    }
+
+    // Also update currentFile if it's the one that was saved
+    if (currentFile.filename === dto.filename) {
+      currentFile.content = content;
+    }
   })
   .catch(error => {
     console.error("Error saving content:", error);
   });
 }
-
 
 loadFileList();

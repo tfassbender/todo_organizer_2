@@ -10,7 +10,7 @@ body {
 }
 
 h1 {
-  padding: 1em;
+  padding: 0.5em;
   margin: 0;
   background: #2c2c2c;
 }
@@ -34,6 +34,8 @@ h1.list-title {
   height: calc(100vh); /* subtract header height */
 }
 
+
+
 #file-list-wrapper {
   width: 300px;
   background: #2c2c2c;
@@ -41,6 +43,13 @@ h1.list-title {
   color: #fff;
   overflow-y: auto;
   border-right: 1px solid #444;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#file-list {
+  flex: 1;
 }
 
 #file-list .file-item {
@@ -68,4 +77,66 @@ h1.list-title {
 #file-list .file-item.selected {
   background-color: #555;
   font-weight: bold;
+}
+
+
+.search-wrapper {
+  margin-top: 50px;
+}
+
+#search-bar {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+#search-input {
+  flex: 1;
+  padding: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+}
+
+#search-results {
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+.search-result {
+  padding: 4px 6px;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result:hover {
+  background-color: #333;
+}
+
+mark {
+  background-color: yellow;
+  color: black;
+}
+
+.icon-button {
+  background: #aaa;
+  border: none;
+  border-radius: 5px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.icon-button img {
+  width: 20px;
+  height: 20px;
+}
+
+.search-button-icon {
+  font-size: 1.3rem;
+}
+.clear-search-button-icon {
+  font-size: 1.5rem;
 }
