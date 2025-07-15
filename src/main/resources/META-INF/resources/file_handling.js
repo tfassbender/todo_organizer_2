@@ -1,7 +1,7 @@
 let currentFile = null;
 
 function loadFileList() {
-  fetch('/todos')
+  fetch('/todos/opened')
     .then(res => res.json())
     .then(files => {
       const fileList = document.getElementById('file-list');

@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import net.tfassbender.todo.analyzer.TodoFileAnalyzer;
 import net.tfassbender.todo.dto.TodoFileDto;
+import net.tfassbender.todo.service.SettingsService;
 import net.tfassbender.todo.service.TodoService;
 
 import java.io.IOException;
@@ -17,12 +18,15 @@ import java.util.List;
 public class TodoResource {
 
   @Inject
-  private TodoService service;
+  private TodoService todoService;
+
+  @Inject
+  private SettingsService settingsService;
 
   @GET
   public Response listTodos() {
     try {
-      List<TodoFileDto> files = service.listTodoFiles();
+      List<TodoFileDto> files = todoService.listTodoFiles();
       return Response.ok(files).build();
     }
     catch (IOException e) {
@@ -31,10 +35,29 @@ public class TodoResource {
   }
 
   @GET
+  @Path("/opened")
+  public Response listOpenedTodos() {
+    try {
+      List<String> openedFiles = settingsService.getSettings().openedFiles;
+      if (openedFiles == null || openedFiles.isEmpty()) {
+        return Response.ok(List.of()).build(); // Return empty list if no files are opened
+      }
+
+      List<TodoFileDto> todos = todoService.listTodoFiles();
+      List<TodoFileDto> openedTodos = todos.stream().filter(todo -> openedFiles.contains(todo.filename)).toList();
+
+      return Response.ok(openedTodos).build();
+    }
+    catch (IOException e) {
+      return Response.serverError().entity("Failed to read opened todos: " + e.getMessage()).build();
+    }
+  }
+
+  @GET
   @Path("/{filename}")
   public Response getTodo(@PathParam("filename") String filename) {
     try {
-      TodoFileDto content = service.readTodoFile(filename);
+      TodoFileDto content = todoService.readTodoFile(filename);
       return Response.ok(content).build();
     }
     catch (IOException e) {
@@ -48,7 +71,7 @@ public class TodoResource {
   public Response saveTodo(@PathParam("filename") String filename, String content) {
     try {
       TodoFileDto dto = new TodoFileDto(filename, content);
-      service.saveTodoFile(dto);
+      todoService.saveTodoFile(dto);
       TodoFileAnalyzer.addIcon(dto); // analyze the icon to send it back updated
       dto.content = null; // Clear content to avoid sending it back
       return Response.ok(dto).build();

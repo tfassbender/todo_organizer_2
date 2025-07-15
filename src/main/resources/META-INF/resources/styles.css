@@ -50,6 +50,11 @@ h1.list-title {
   cursor: pointer;
 }
 
+#file-list .file-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 #file-list .file-icon {
   width: 16px;
   height: 16px;
