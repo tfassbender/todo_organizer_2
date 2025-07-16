@@ -4,6 +4,7 @@ import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import net.tfassbender.todo.dto.TodoSettingsDto;
 import net.tfassbender.todo.service.SettingsService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class TodoStartupInitializer {
 
     createDirectory(todosDir);
     createDirectory(todosSettingsDir);
-    createInitialSettingsFile(todosSettingsDir);
+    initAndValidateSettings();
   }
 
   private void createDirectory(Path directory) {
@@ -49,8 +50,20 @@ public class TodoStartupInitializer {
     }
   }
 
-  private void createInitialSettingsFile(Path settingsDir) {
-    settingsService.getSettings(); // will load settings from file or create a new settings object
-    settingsService.saveSettings(); // stores the loaded or newly created settings object to the file
+  private void initAndValidateSettings() {
+    TodoSettingsDto settings = settingsService.getSettings(); // if the settings file does not exist, it will be created with default values
+
+    // for each opened file, check if it exists (and if not, remove it from the list)
+    settings.openedFiles.removeIf(file -> {
+      Path filePath = Paths.get(todosPath, file + ".todo");
+      boolean exists = Files.exists(filePath);
+      if (!exists) {
+        log.warn("Opened file does not exist: {} - removing it from settings file", filePath.toAbsolutePath());
+      }
+      return !exists;
+    });
+
+    // save the updated settings back to the file
+    settingsService.saveSettings();
   }
 }

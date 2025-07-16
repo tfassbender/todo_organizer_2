@@ -61,4 +61,9 @@ public class TodoService {
 
     Files.writeString(path, todoFileDto.content);
   }
+  
+  public boolean todoFileExists(String filename) {
+    Path path = Paths.get(todosPath, filename + FILE_EXTENSION);
+    return Files.exists(path) && Files.isRegularFile(path);
+  }
 }

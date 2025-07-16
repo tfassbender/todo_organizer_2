@@ -1,45 +1,51 @@
 let currentFile = null;
-let openedFiles = [];
+var openedFiles = [];
 
 function loadFileList() {
   fetch('/todos/opened')
-    .then(res => res.json())
+    .then(async res => {
+      if (!res.ok) {
+        const errorText = await res.text();
+        const errorJson = JSON.parse(errorText);
+        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
+      }
+      return res.json();
+    })
     .then(files => {
       openedFiles = files; // Save for later search
       const fileList = document.getElementById('file-list');
       fileList.innerHTML = '';
 
       files.forEach(file => {
-        const item = document.createElement('div');
-        item.className = `file-item data-filename-${file.filename}`;
-
-        if (file.icon) {
-          const icon = document.createElement('img');
-          icon.src = `/icons/${file.icon}`;
-          icon.alt = 'icon';
-          icon.className = 'file-icon';
-          item.appendChild(icon);
-        }
-
-        const text = document.createElement('span');
-        text.textContent = file.filename;
-        item.appendChild(text);
-
-        item.addEventListener('click', () => {
-          selectFile(file);
-        });
-
+        const item = createFileItem(file);
         fileList.appendChild(item);
       });
     })
-    .catch(err => console.error('Error loading file list:', err));
+    .then(() => {
+        // If there's a current file, select it
+        if (openedFiles.length > 0) {
+            selectFile(openedFiles[0]);
+        }
+    })
+    .catch(err => {
+      console.error("Error loading file list:", err);
+      showErrorModal("Failed to load file list: " + err.message);
+    });
 }
 
 function selectFile(file) {
   if (currentFile != null && file.filename === currentFile.filename) return;
 
   fetch(`/todos/${file.filename}`)
-    .then(res => res.json())
+
+    .then(async res => {
+      if (!res.ok) {
+        const errorText = await res.text();
+        const errorJson = JSON.parse(errorText);
+        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
+      }
+      return res.json();
+    })
     .then(dto => {
       currentFile = dto;
 
@@ -58,7 +64,10 @@ function selectFile(file) {
         titleEl.textContent = dto.filename;
       }
     })
-    .catch(err => console.error('Failed to load file:', err));
+    .catch(err => {
+      console.error("Error loading file:", err);
+      showErrorModal("Failed to load file: " + err.message);
+    });
 }
 
 function sendContentToBackend(content) {
@@ -71,9 +80,13 @@ function sendContentToBackend(content) {
     },
     body: content
   })
-  .then(response => {
-    if (!response.ok) throw new Error("Failed to save content");
-    return response.json(); // Expecting a TodoFileDto with updated icon
+  .then(async res => {
+      if (!res.ok) {
+        const errorText = await res.text();
+        const errorJson = JSON.parse(errorText);
+        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
+      }
+      return res.json();
   })
   .then(dto => {
     // Update the icon in the file list UI
@@ -93,8 +106,9 @@ function sendContentToBackend(content) {
       currentFile.content = content;
     }
   })
-  .catch(error => {
-    console.error("Error saving content:", error);
+  .catch(err => {
+    console.error("Error saving file:", err);
+    showErrorModal("Failed to save changes: " + err.message);
   });
 }
 
