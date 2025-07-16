@@ -205,3 +205,31 @@ mark {
 .hidden {
   display: none;
 }
+
+
+
+.modal .file-list-scrollable {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 1em 0;
+}
+
+#open-file-list div {
+  padding: 0.3em;
+  cursor: pointer;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+#open-file-list div:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
+
+#open-file-list div:hover {
+  background-color: #668;
+}
+
+#open-file-list .selected {
+  background-color: #86a0b8;
+}
+

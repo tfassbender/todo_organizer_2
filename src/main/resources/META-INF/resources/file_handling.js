@@ -28,7 +28,7 @@ function loadFileList() {
         }
     })
     .catch(err => {
-      console.error("Error loading file list:", err);
+      console.warning("Error loading file list:", err);
       showErrorModal("Failed to load file list: " + err.message);
     });
 }
@@ -65,7 +65,7 @@ function selectFile(file) {
       }
     })
     .catch(err => {
-      console.error("Error loading file:", err);
+      console.log("Error loading file:", err);
       showErrorModal("Failed to load file: " + err.message);
     });
 }
@@ -107,7 +107,7 @@ function sendContentToBackend(content) {
     }
   })
   .catch(err => {
-    console.error("Error saving file:", err);
+    console.log("Error saving file:", err);
     showErrorModal("Failed to save changes: " + err.message);
   });
 }

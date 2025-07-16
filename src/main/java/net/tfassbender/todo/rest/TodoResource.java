@@ -29,9 +29,14 @@ public class TodoResource {
   private SettingsService settingsService;
 
   @GET
-  public Response listTodos() {
+  public Response listTodos(@QueryParam("no-content") boolean noContent) {
     try {
       List<TodoFileDto> files = todoService.listTodoFiles();
+      if (noContent) {
+        // clear the content of each file
+        files.forEach(file -> file.content = null);
+      }
+
       return Response.ok(files).build();
     }
     catch (IOException e) {
@@ -74,13 +79,31 @@ public class TodoResource {
 
   @GET
   @Path("/{filename}")
-  public Response getTodo(@PathParam("filename") String filename) {
+  public Response getTodoFile(@PathParam("filename") String filename) {
     try {
-      TodoFileDto content = todoService.readTodoFile(filename);
-      return Response.ok(content).build();
+      TodoFileDto dto = todoService.readTodoFile(filename);
+      TodoFileAnalyzer.addIcon(dto);
+      return Response.ok(dto).build();
     }
     catch (IOException e) {
       return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseDto("Todo not found: " + e.getMessage())).build();
+    }
+  }
+
+  @POST
+  @Path("/opened/{filename}")
+  public Response openTodoFile(@PathParam("filename") String filename) {
+    try {
+      TodoFileDto dto = todoService.readTodoFile(filename);
+      TodoFileAnalyzer.addIcon(dto);
+
+      settingsService.getSettings().openedFiles.add(filename);
+      settingsService.saveSettings();
+
+      return Response.ok(dto).build();
+    }
+    catch (IOException e) {
+      return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseDto("Todo file to open not found: " + e.getMessage())).build();
     }
   }
 
