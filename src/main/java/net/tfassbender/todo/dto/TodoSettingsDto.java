@@ -1,5 +1,6 @@
 package net.tfassbender.todo.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,5 +8,5 @@ import java.util.List;
  */
 public class TodoSettingsDto {
 
-  public List<String> openedFiles = List.of();
+  public List<String> openedFiles = new ArrayList<>();
 }
