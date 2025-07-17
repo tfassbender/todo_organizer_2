@@ -3,14 +3,7 @@ var openedFiles = [];
 
 function loadFileList() {
   fetch('/todos/opened')
-    .then(async res => {
-      if (!res.ok) {
-        const errorText = await res.text();
-        const errorJson = JSON.parse(errorText);
-        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
-      }
-      return res.json();
-    })
+    .then(parseJsonResponse)
     .then(files => {
       openedFiles = files; // Save for later search
       const fileList = document.getElementById('file-list');
@@ -31,21 +24,15 @@ function loadFileList() {
       console.warning("Error loading file list:", err);
       showErrorModal("Failed to load file list: " + err.message);
     });
+
+    initializeDragAndDrop();
 }
 
 function selectFile(file) {
   if (currentFile != null && file.filename === currentFile.filename) return;
 
   fetch(`/todos/${file.filename}`)
-
-    .then(async res => {
-      if (!res.ok) {
-        const errorText = await res.text();
-        const errorJson = JSON.parse(errorText);
-        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
-      }
-      return res.json();
-    })
+    .then(parseJsonResponse)
     .then(dto => {
       currentFile = dto;
 
@@ -108,14 +95,7 @@ function sendContentToBackend(content) {
     },
     body: content
   })
-  .then(async res => {
-      if (!res.ok) {
-        const errorText = await res.text();
-        const errorJson = JSON.parse(errorText);
-        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
-      }
-      return res.json();
-  })
+  .then(parseJsonResponse)
   .then(dto => {
     // Update the icon in the file list UI
     const fileItem = document.querySelector(`.file-item.data-filename-${dto.filename}`);
@@ -139,5 +119,60 @@ function sendContentToBackend(content) {
     showErrorModal("Failed to save changes: " + err.message);
   });
 }
+
+function initializeDragAndDrop() {
+  const fileList = document.getElementById('file-list');
+  new Sortable(fileList, {
+    animation: 150,
+    ghostClass: 'drag-ghost',
+    onEnd: (evt) => {
+      // Grab the new order from the DOM
+      const newOrder = Array.from(fileList.children).map(item => {
+        const span = item.querySelector('span');
+        return span ? span.textContent : null;
+      }).filter(Boolean);
+
+      // Send to backend
+      sendNewOrderToBackend(newOrder);
+    }
+  });
+}
+
+function sendNewOrderToBackend(order) {
+  fetch('/todos/order', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(order) // Array of filenames in new order
+  })
+  .then(parseJsonResponse)
+  .catch(err => {
+    console.error("Failed to send new file order to backend:", err);
+    showErrorModal("Failed to update file order: " + err.message);
+  });
+}
+
+async function parseJsonResponse(res) {
+  if (!res.ok) {
+    const errorText = await res.text();
+    let errorMessage;
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMessage = errorJson.errorMessage || "Unknown error";
+    } catch {
+      errorMessage = errorText || "Unknown error";
+    }
+    throw { response: res, message: errorMessage };
+  }
+
+  const contentType = res.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return res.json();
+  } else {
+    return null;
+  }
+}
+
 
 loadFileList();

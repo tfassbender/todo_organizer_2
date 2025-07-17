@@ -104,6 +104,13 @@ h1.list-title {
 }
 
 
+.drag-ghost {
+  opacity: 0.4;
+  background-color: #444;
+}
+
+
+
 
 .buttons-wrapper {
   display: flex;

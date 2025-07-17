@@ -117,6 +117,29 @@ public class TodoResource {
   }
 
   @PUT
+  @Path("/order")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateTodoOrder(List<String> filenames) {
+    if (filenames == null || filenames.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponseDto("Filenames list must not be empty")).build();
+    }
+
+    // Validate that all filenames exist
+    for (String filename : filenames) {
+      if (!todoService.todoFileExists(filename)) {
+        return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponseDto("File not found: " + filename)).build();
+      }
+    }
+
+    // Update the order in settings
+    TodoSettingsDto settings = settingsService.getSettings();
+    settings.openedFiles = filenames;
+    settingsService.saveSettings();
+
+    return Response.ok().build();
+  }
+
+  @PUT
   @Path("/{filename}")
   @Consumes(MediaType.TEXT_PLAIN)
   public Response updateTodo(@PathParam("filename") String filename, String content) {

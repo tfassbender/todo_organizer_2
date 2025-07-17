@@ -62,17 +62,8 @@ function showNewFileModal() {
 }
 
 function createNewTodo(filename) {
-  fetch(`/todos/${encodeURIComponent(filename)}`, {
-    method: "POST",
-  })
-    .then(async res => {
-      if (!res.ok) {
-        const errorText = await res.text();
-        const errorJson = JSON.parse(errorText);
-        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
-      }
-      return res.json();
-    })
+  fetch(`/todos/${encodeURIComponent(filename)}`, {method: "POST"})
+    .then(parseJsonResponse)
     .then(newFileDto => {
       openedFiles.push(newFileDto);
 
@@ -133,14 +124,7 @@ function showOpenFileModal() {
   selectedToOpen = null;
 
   fetch("/todos?no-content")
-    .then(async res => {
-      if (!res.ok) {
-        const errorText = await res.text();
-        const errorJson = JSON.parse(errorText);
-        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
-      }
-      return res.json();
-    })
+    .then(parseJsonResponse)
     .then(allFiles => {
       // Filter out opened files
       const openedFilenames = openedFiles.map(file => file.filename);
@@ -189,14 +173,7 @@ function openFile() {
   }
 
   fetch(`/todos/opened/${encodeURIComponent(selectedToOpen)}`, {method: "POST"})
-    .then(async res => {
-      if (!res.ok) {
-        const errorText = await res.text();
-        const errorJson = JSON.parse(errorText);
-        throw { response: res, message: errorJson.errorMessage || "Unknown error" };
-      }
-      return res.json();
-    })
+    .then(parseJsonResponse)
     .then(fileDto => {
       openedFiles.push(fileDto);
 
