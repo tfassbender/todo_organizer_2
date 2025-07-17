@@ -107,6 +107,15 @@ public class TodoResource {
     }
   }
 
+  @DELETE
+  @Path("/opened/{filename}")
+  public Response closeTodoFile(@PathParam("filename") String filename) {
+    settingsService.getSettings().openedFiles.remove(filename);
+    settingsService.saveSettings();
+
+    return Response.ok().build();
+  }
+
   @PUT
   @Path("/{filename}")
   @Consumes(MediaType.TEXT_PLAIN)

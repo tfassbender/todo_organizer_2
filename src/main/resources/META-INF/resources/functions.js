@@ -108,6 +108,17 @@ function createFileItem(file) {
     selectFile(file);
   });
 
+  // Add close button
+  const closeButton = document.createElement('button');
+  closeButton.className = 'file-close-button';
+  closeButton.innerHTML = '&times;'; // × symbol
+  closeButton.title = 'Close file';
+  closeButton.addEventListener('click', (event) => {
+    event.stopPropagation(); // Prevent triggering file select
+    closeFile(file.filename, item);
+  });
+  item.appendChild(closeButton);
+
   return item;
 }
 
@@ -143,6 +154,11 @@ function showOpenFileModal() {
         option.textContent = "All files are already opened";
         option.disabled = true;
         select.appendChild(option);
+
+        // If no unopened files, hide the button and return
+        if (unopenedFiles.length === 0) {
+          document.getElementById("confirm-open-btn").style.display = "none";
+        }
       } else {
         unopenedFiles.forEach(file => {
           const item = document.createElement("div");
@@ -154,6 +170,9 @@ function showOpenFileModal() {
           });
           fileListEl.appendChild(item);
         });
+
+        // The button might be hidden (if no files were available before), so show it now
+        document.getElementById("confirm-open-btn").style.display = "inherit";
       }
 
       openFileModal.classList.remove("hidden");

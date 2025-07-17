@@ -51,9 +51,10 @@ function selectFile(file) {
 
       // Update selection UI
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
-      Array.from(document.querySelectorAll('.file-item'))
-        .find(el => el.textContent === file.filename)
-        ?.classList.add('selected');
+      const selectedElement = document.querySelector(`.data-filename-${CSS.escape(file.filename)}`);
+      if (selectedElement) {
+        selectedElement.classList.add('selected');
+      }
 
       // Update editor content and file title
       editor.setValue(dto.content);
@@ -69,6 +70,33 @@ function selectFile(file) {
       showErrorModal("Failed to load file: " + err.message);
     });
 }
+
+function closeFile(filename, element) {
+  fetch(`/todos/opened/${encodeURIComponent(filename)}`, {
+    method: "DELETE"
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("Failed to close file");
+
+    // Remove from openedFiles list
+    const index = openedFiles.findIndex(f => f.filename === filename);
+    if (index !== -1) openedFiles.splice(index, 1);
+
+    // Remove element from DOM
+    element.remove();
+
+    // If currentFile is the one we closed, reset editor
+    if (currentFile && currentFile.filename === filename) {
+      currentFile = null;
+      editor.setValue("");
+    }
+  })
+  .catch(err => {
+    console.error("Error closing file:", err);
+    showErrorModal("Failed to close file: " + err.message);
+  });
+}
+
 
 function sendContentToBackend(content) {
   if (!currentFile) return;
