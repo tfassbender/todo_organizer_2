@@ -6,9 +6,7 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
   keyMap: 'sublime',
   extraKeys: {
     'Ctrl-S': function(cm) {
-      const content = cm.getValue();
-      const cursor = cm.getCursor();
-      alert('Ctrl+S pressed!\n\nContent:\n' + content + '\n\nCursor at line ' + cursor.line);
+      // do nothing on Ctrl-S to prevent default browser save (content will be saved automatically on every change)
     },
     'Ctrl-D': function(cm) {
       const line = cm.getCursor().line;
