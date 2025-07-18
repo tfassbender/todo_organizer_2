@@ -51,6 +51,10 @@ function selectFile(file) {
       if (titleEl) {
         titleEl.textContent = dto.filename;
       }
+
+      // Set focus to editor (end of first line)
+      editor.focus();
+      editor.setCursor(0, editor.getLine(0).length);
     })
     .catch(err => {
       console.log("Error loading file:", err);
