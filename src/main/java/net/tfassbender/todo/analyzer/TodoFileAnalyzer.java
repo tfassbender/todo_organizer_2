@@ -76,7 +76,7 @@ public class TodoFileAnalyzer {
       return LineType.EMPTY;
     }
 
-    if (line.matches("^#\\s.*")) {
+    if (line.matches("^#{1,4}\\s.*")) {
       return LineType.HEADLINE;
     }
     // Prefixes (ignore leading whitespace)
