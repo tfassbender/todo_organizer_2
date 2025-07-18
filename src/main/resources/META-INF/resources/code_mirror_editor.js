@@ -109,20 +109,20 @@ function toggleLinePrefix(cm, prefix) {
 
       for (let i = fromLine; i <= toLine; i++) {
         const lineContent = cm.getLine(i);
-        const leadingSpaces = lineContent.match(/^\s*/)[0];
 
         if (shouldRemove) {
-          if (lineContent.trimStart().startsWith(prefix)) {
-            const updated = lineContent.replace(new RegExp(`^\\s*${escapeRegex(prefix)}`), leadingSpaces);
-            cm.replaceRange(updated, { line: i, ch: 0 }, { line: i, ch: lineContent.length });
-          }
+          const updated = lineContent.replace(new RegExp(`^(\\s*)${escapeRegex(prefix)}`), '$1');
+          cm.replaceRange(updated, { line: i, ch: 0 }, { line: i, ch: lineContent.length });
         } else {
-          cm.replaceRange(leadingSpaces + prefix + lineContent.trimStart(), { line: i, ch: 0 }, { line: i, ch: lineContent.length });
+          // Add prefix at the start, keep original content (including spaces)
+          const updated = `${prefix}${lineContent}`;
+          cm.replaceRange(updated, { line: i, ch: 0 }, { line: i, ch: lineContent.length });
         }
       }
     });
   });
 }
+
 
 // Utility to escape regex special characters
 function escapeRegex(s) {
