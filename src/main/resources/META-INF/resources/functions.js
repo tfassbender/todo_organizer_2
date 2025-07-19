@@ -37,6 +37,13 @@ document.addEventListener("DOMContentLoaded", () => {
     modalOverlay.classList.add("hidden");
   });
 
+  // Close modal on Escape key
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAllModals();
+    }
+  });
+
   // Error modal setup
   errorModalOverlay = document.getElementById("error-modal-overlay");
   errorModalMessage = document.getElementById("error-modal-message");
@@ -52,6 +59,43 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("cancel-open-btn").addEventListener("click", () => {
     openFileModal.classList.add("hidden");
     selectedToOpen = null;
+  });
+
+  // toolbar button setup
+  initTouchToolbarSetting();
+
+  // Open settings modal
+  document.getElementById("settings-button")?.addEventListener("click", openSettingsModal);
+
+  // Save settings
+  document.getElementById("save-settings-btn")?.addEventListener("click", () => {
+    const newSetting = document.getElementById("touch-toolbar-toggle").checked;
+    localStorage.setItem("showTouchButtons", String(newSetting));
+    closeSettingsModal();
+    toggleTouchToolbar(newSetting); // Apply immediately
+  });
+
+  // Cancel settings
+  document.getElementById("cancel-settings-btn")?.addEventListener("click", closeSettingsModal);
+
+  // toggle line prefixes with buttons
+  document.getElementById("toggle-done-btn").addEventListener("click", () => {
+     toggleLinePrefix(window.cm, "/ ");
+  });
+  document.getElementById("toggle-comment-btn").addEventListener("click", () => {
+     toggleLinePrefix(window.cm, "// ");
+  });
+  document.getElementById("toggle-question-btn").addEventListener("click", () => {
+     toggleLinePrefix(window.cm, "? ");
+  });
+  document.getElementById("toggle-important-btn").addEventListener("click", () => {
+     toggleLinePrefix(window.cm, "! ");
+  });
+  document.getElementById("toggle-headline-btn").addEventListener("click", () => {
+     toggleLinePrefix(window.cm, "# ");
+  });
+  document.getElementById("toggle-dash-btn").addEventListener("click", () => {
+      toggleLinePrefix(window.cm, "/- ");
   });
 });
 
@@ -189,3 +233,39 @@ function openFile() {
       showErrorModal("Failed to open file: " + err.message);
     });
 }
+
+function toggleTouchToolbar(show) {
+    const toolbar = document.getElementById("editor-toolbar");
+    if (show) {
+        toolbar.classList.remove("hidden");
+    } else {
+        toolbar.classList.add("hidden");
+    }
+}
+
+function initTouchToolbarSetting() {
+    const savedSetting = localStorage.getItem("showTouchButtons");
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (savedSetting === null && isTouch) {
+        localStorage.setItem("showTouchButtons", "true");
+    }
+
+    toggleTouchToolbar(localStorage.getItem("showTouchButtons") === "true");
+}
+
+function openSettingsModal() {
+  document.getElementById("settings-modal-overlay").classList.remove("hidden");
+  const showToolbar = localStorage.getItem("showTouchButtons") === "true";
+  document.getElementById("touch-toolbar-toggle").checked = showToolbar;
+}
+
+function closeSettingsModal() {
+  document.getElementById("settings-modal-overlay").classList.add("hidden");
+}
+
+function closeAllModals() {
+   document.querySelectorAll(".modal-overlay").forEach(modal => {
+     modal.classList.add("hidden");
+   });
+ }

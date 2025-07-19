@@ -18,7 +18,12 @@
 
 <div id="main-container">
     <div id="file-list-wrapper">
-        <h1 class="list-title">TODOs</h1>
+        <div class="list-title-with-settings">
+            <h1 class="list-title">TODOs</h1>
+            <button id="settings-button" class="icon-button" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
         <div id="file-list">
             <!-- Populated via JS -->
         </div>
@@ -47,9 +52,32 @@
         </div>
     </div>
 
-    <div id="editor-wrapper">
-        <label for="editor"></label>
-        <textarea id="editor"></textarea>
+    <div class="content-right-wrapper">
+        <div id="editor-toolbar" class="hidden">
+            <button id="toggle-done-btn" class="editor-toolbar-btn" title="Toggle done line">
+                <i class="fas fa-check"></i>
+            </button>
+            <button id="toggle-comment-btn" class="editor-toolbar-btn" title="Toggle comment line">
+                <i class="fas fa-comment"></i>
+            </button>
+            <button id="toggle-question-btn" class="editor-toolbar-btn" title="Toggle Question">
+                <i class="fas fa-question"></i>
+            </button>
+            <button id="toggle-important-btn" class="editor-toolbar-btn" title="Toggle Important">
+                <i class="fas fa-exclamation"></i>
+            </button>
+            <button id="toggle-headline-btn" class="editor-toolbar-btn" title="Toggle Headline">
+                <i class="fas fa-heading"></i>
+            </button>
+            <button id="toggle-dash-btn" class="editor-toolbar-btn" title="Toggle dash line">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+
+        <div id="editor-wrapper">
+            <label for="editor"></label>
+            <textarea id="editor"></textarea>
+        </div>
     </div>
 </div>
 
@@ -82,6 +110,24 @@
         <p id="error-modal-message"></p>
         <div class="modal-buttons">
             <button id="error-modal-ok-btn">OK</button>
+        </div>
+    </div>
+</div>
+
+<div id="settings-modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+        <h2>Settings</h2>
+
+        <div class="modal-setting">
+            <label>
+                <input type="checkbox" id="touch-toolbar-toggle">
+                Show toggle buttons
+            </label>
+        </div>
+
+        <div class="modal-buttons">
+            <button id="save-settings-btn">Save</button>
+            <button id="cancel-settings-btn">Cancel</button>
         </div>
     </div>
 </div>

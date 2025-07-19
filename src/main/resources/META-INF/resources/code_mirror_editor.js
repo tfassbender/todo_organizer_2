@@ -51,6 +51,9 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
   }
 });
 
+// Make the editor globally accessible
+window.cm = editor;
+
 function addHighlighting() {
   const totalLines = editor.lineCount();
 
