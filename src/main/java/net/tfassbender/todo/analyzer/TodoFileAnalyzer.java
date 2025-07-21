@@ -63,7 +63,7 @@ public class TodoFileAnalyzer {
     String[] splitLines = content.split("\n");
 
     for (int i = 0; i < splitLines.length; i++) {
-      String line = splitLines[i].trim();
+      String line = splitLines[i];
       LineType type = determineLineType(line);
       lines.add(new TodoLine(type, i + 1));
     }

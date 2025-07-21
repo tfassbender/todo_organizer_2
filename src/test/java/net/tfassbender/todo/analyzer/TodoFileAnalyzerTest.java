@@ -64,6 +64,73 @@ class TodoFileAnalyzerTest {
   }
 
   @Test
+  void testAddIcon_emptyComment() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", "# asdf\n" //
+            + "   // <add a todo here>\n"  //
+            + "// \n" //
+            + "   \n" //
+            + "### something\n" //
+            + "/ asdf"));
+
+    assertEquals("icon_done_small.png", dto.icon);
+  }
+
+  @Test
+  void testAddIcon_prefixesWithoutText_done() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", "# \n" //
+            + "// \n" //
+            + " \t// \n" //
+            + "/ \n" //
+            + " \t/ \n" //
+            + "/- \n" //
+            + " \t/- \n" //
+    ));
+
+    assertEquals("icon_done_small.png", dto.icon);
+  }
+
+  @Test
+  void testAddIcon_prefixesWithoutText_important() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", "! \n"));
+    assertEquals("icon_important_small.png", dto.icon);
+
+    dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", " \t! \n"));
+    assertEquals("icon_important_small.png", dto.icon);
+  }
+
+  @Test
+  void testAddIcon_prefixesWithoutText_question() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", "? \n"));
+    assertEquals("icon_question_small.png", dto.icon);
+
+    dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", " \t? \n"));
+    assertEquals("icon_question_small.png", dto.icon);
+  }
+
+  @Test
+  void testAddIcon_leadingWhitespaces_done() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", "# for headlines leading whitespaces are not allowed" //
+            + " \t// comment\n" //
+            + " \t/ done\n" //
+            + " \t/- struck\n" //
+    ));
+
+    assertEquals("icon_done_small.png", dto.icon);
+  }
+
+  @Test
+  void testAddIcon_leadingWhitespaces_important() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", " \t! important"));
+    assertEquals("icon_important_small.png", dto.icon);
+  }
+
+  @Test
+  void testAddIcon_leadingWhitespaces_question() {
+    TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", " \t? question"));
+    assertEquals("icon_question_small.png", dto.icon);
+  }
+
+  @Test
   void testAddIcon_empty() {
     TodoFileDto dto = TodoFileAnalyzer.addIcon(new TodoFileDto("todo_file", ""));
 
