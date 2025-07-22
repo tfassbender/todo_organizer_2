@@ -28,6 +28,7 @@ h1.list-title {
 #editor-wrapper {
   flex: 1;
   padding: 1em;
+  overflow-y: scroll;
 }
 
 .CodeMirror {
