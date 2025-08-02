@@ -1,1 +1,1 @@
-rootProject.name = "quarkus-recipes-server"
+rootProject.name = "quarkus-todo-server"

@@ -36,6 +36,10 @@ h1.list-title {
   font-size: 16px;
 }
 
+.CodeMirror-sizer {
+  padding-bottom: 25vh !important; /* scroll past the bottom line by 25% view height */
+}
+
 #main-container {
   display: flex;
   height: calc(100vh); /* subtract header height */
@@ -319,6 +323,20 @@ mark {
 
 #settings-modal-overlay .modal {
   max-width: 400px;
+  position: relative;
+}
+
+#settings-modal-overlay .version-info {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 0.8rem;
+}
+
+#settings-modal-overlay .version-info a {
+  margin-left: 5px;
+  text-decoration: none;
+  color: #55f;
 }
 
 #settings-button {

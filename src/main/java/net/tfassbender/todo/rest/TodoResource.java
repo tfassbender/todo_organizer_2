@@ -10,6 +10,7 @@ import net.tfassbender.todo.dto.TodoFileDto;
 import net.tfassbender.todo.dto.TodoSettingsDto;
 import net.tfassbender.todo.service.SettingsService;
 import net.tfassbender.todo.service.TodoService;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -27,6 +28,9 @@ public class TodoResource {
 
   @Inject
   private SettingsService settingsService;
+
+  @ConfigProperty(name = "application.version")
+  private String applicationVersion;
 
   @GET
   public Response listTodos(@QueryParam("no-content") boolean noContent) {
@@ -188,5 +192,16 @@ public class TodoResource {
     catch (IOException e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorResponseDto("Failed to create todo: " + e.getMessage())).build();
     }
+  }
+
+  @GET
+  @Path("/version")
+  public Response getVersion() {
+    if (applicationVersion == null || applicationVersion.isBlank()) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorResponseDto("Application version is not set")).build();
+    }
+
+    // return response in a map, so it's parsed as JSON
+    return Response.ok(Map.of("version", applicationVersion)).build();
   }
 }

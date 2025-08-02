@@ -258,6 +258,17 @@ function openSettingsModal() {
   document.getElementById("settings-modal-overlay").classList.remove("hidden");
   const showToolbar = localStorage.getItem("showTouchButtons") === "true";
   document.getElementById("touch-toolbar-toggle").checked = showToolbar;
+
+  // Fetch version info
+  fetch("/todos/version")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("app-version").textContent = data.version || "Unknown";
+    })
+    .catch(err => {
+      console.error("Failed to load version:", err);
+      document.getElementById("app-version").textContent = "Error";
+    });
 }
 
 function closeSettingsModal() {
