@@ -78,6 +78,54 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cancel settings
   document.getElementById("cancel-settings-btn")?.addEventListener("click", closeSettingsModal);
 
+  // submit password for authentication
+  document.getElementById("auth-submit-button").addEventListener("click", async () => {
+      const password = document.getElementById("auth-password").value;
+      const statusEl = document.getElementById("auth-status");
+      statusEl.textContent = "";
+      statusEl.className = "auth-status";
+
+      try {
+          const res = await fetch("/auth/login", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ password })
+          });
+
+          if (res.ok) {
+              statusEl.textContent = "Login successful";
+              statusEl.classList.add("success");
+              location.reload();
+          } else {
+              statusEl.textContent = "Invalid password";
+              statusEl.classList.add("error");
+          }
+      } catch (err) {
+          statusEl.textContent = "Error during login";
+          statusEl.classList.add("error");
+      }
+  });
+
+  // logout button
+  document.getElementById('logout-button').addEventListener('click', () => {
+    fetch('/auth/logout', {
+      method: 'POST',
+      credentials: 'include' // Important to send the cookie
+    })
+    .then(res => {
+      const statusEl = document.getElementById("auth-status");
+      if (res.ok) {
+        statusEl.textContent = "Logged out successfully";
+        location.reload(); // or redirect to login if you add one
+      } else {
+        statusEl.textContent = "Failed to log out";
+        statusEl.classList.add("error");
+      }
+    });
+  });
+
   // toggle line prefixes with buttons
   document.getElementById("toggle-done-btn").addEventListener("click", () => {
      toggleLinePrefix(window.cm, "/ ");
