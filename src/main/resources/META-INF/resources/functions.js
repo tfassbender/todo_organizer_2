@@ -125,7 +125,8 @@ function createNewTodo(filename) {
 
 function createFileItem(file) {
   const item = document.createElement('div');
-  item.className = `file-item data-filename-${file.filename}`;
+  item.className = 'file-item';
+  item.dataset.filename = file.filename;
 
   if (file.icon) {
     const icon = document.createElement('img');

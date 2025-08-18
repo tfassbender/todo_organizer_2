@@ -102,7 +102,7 @@ function sendContentToBackend(content) {
   .then(parseJsonResponse)
   .then(dto => {
     // Update the icon in the file list UI
-    const fileItem = document.querySelector(`.file-item.data-filename-${dto.filename}`);
+    const fileItem = document.querySelector(`.file-item[data-filename="${CSS.escape(dto.filename)}"]`);
     if (fileItem && dto.icon) {
       fileItem.querySelector('.file-icon').src = "icons/" + dto.icon;
     }
