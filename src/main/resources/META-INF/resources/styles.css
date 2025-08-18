@@ -36,6 +36,10 @@ h1.list-title {
   font-size: 16px;
 }
 
+.CodeMirror-sizer {
+  padding-bottom: 25vh !important; /* scroll past the bottom line by 25% view height */
+}
+
 #main-container {
   display: flex;
   height: calc(100vh); /* subtract header height */
@@ -270,7 +274,7 @@ mark {
   gap: 10px;
 }
 
-.modal-buttons button {
+.modal-buttons button, .auth-buttons button {
   padding: 6px 12px;
   border: none;
   border-radius: 4px;
@@ -312,15 +316,66 @@ mark {
 
 
 .modal-setting {
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   font-size: 1rem;
   color: #ddd;
 }
 
 #settings-modal-overlay .modal {
   max-width: 400px;
+  position: relative;
+}
+
+#settings-modal-overlay .version-info {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 0.8rem;
+}
+
+#settings-modal-overlay .version-info a {
+  margin-left: 5px;
+  text-decoration: none;
+  color: #55f;
 }
 
 #settings-button {
   margin-left: auto;
+}
+
+.auth-wrapper {
+  padding-bottom: 0.5rem;
+}
+
+.auth-wrapper input[type="password"] {
+   padding: 0.3em;
+   margin-left: 5px;
+   width: 50%;
+   font-size: 1em;
+   border: 1px solid #aaa;
+   border-radius: 4px;
+   background-color: #1e1e1e;
+   color: #fff;
+ }
+
+ .auth-wrapper input[type="password"]:focus {
+   border-color: #66d9ef;
+   outline: none;
+   box-shadow: 0 0 5px rgba(102, 217, 239, 0.5);
+ }
+
+.auth-buttons button {
+  margin-right: 5px;
+}
+
+.auth-status {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+.auth-status.success {
+    color: green;
+}
+.auth-status.error {
+    color: red;
 }

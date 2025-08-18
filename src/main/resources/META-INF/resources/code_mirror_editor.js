@@ -4,6 +4,9 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
   lineNumbers: true,
   lineWrapping: true,
   keyMap: 'sublime',
+  indentUnit: 2,
+  tabSize: 2,
+  indentWithTabs: false,
   extraKeys: {
     'Ctrl-S': function(cm) {
       // do nothing on Ctrl-S to prevent default browser save (content will be saved automatically on every change)
@@ -47,6 +50,13 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     'Ctrl-Alt-4': function(cm) {
       toggleLinePrefix(cm, '#### ');
       return true; // Prevent default behavior
+    },
+    'Tab': function(cm) {
+      if (cm.somethingSelected()) {
+        cm.indentSelection("add");
+      } else {
+        cm.replaceSelection("  ", "end");
+      }
     },
   }
 });
