@@ -38,7 +38,7 @@ function selectFile(file) {
 
       // Update selection UI
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
-      const selectedElement = document.querySelector(`.data-filename-${CSS.escape(file.filename)}`);
+      const selectedElement = document.querySelector(`.file-item[data-filename="${CSS.escape(dto.filename)}"]`);
       if (selectedElement) {
         selectedElement.classList.add('selected');
       }
