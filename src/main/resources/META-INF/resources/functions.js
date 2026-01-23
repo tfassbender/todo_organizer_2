@@ -67,6 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Open settings modal
   document.getElementById("settings-button")?.addEventListener("click", openSettingsModal);
 
+  // Sidebar collapse/expand buttons
+  document.getElementById("collapse-sidebar-button")?.addEventListener("click", collapseSidebar);
+  document.getElementById("expand-sidebar-button")?.addEventListener("click", expandSidebar);
+
   // Save settings
   document.getElementById("save-settings-btn")?.addEventListener("click", () => {
     const newSetting = document.getElementById("touch-toolbar-toggle").checked;
@@ -329,3 +333,20 @@ function closeAllModals() {
      modal.classList.add("hidden");
    });
  }
+
+function collapseSidebar() {
+  const sidebar = document.getElementById("file-list-wrapper");
+  const expandButton = document.getElementById("expand-sidebar-button");
+
+  sidebar.classList.add("collapsed");
+  expandButton.classList.remove("hidden");
+}
+
+function expandSidebar() {
+  const sidebar = document.getElementById("file-list-wrapper");
+  const expandButton = document.getElementById("expand-sidebar-button");
+
+  sidebar.classList.remove("collapsed");
+  expandButton.classList.add("hidden");
+}
+

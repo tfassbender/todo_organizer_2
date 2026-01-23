@@ -7,6 +7,7 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -23,12 +24,14 @@ h1.list-title {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 #editor-wrapper {
   flex: 1;
   padding: 1em;
   overflow-y: scroll;
+  min-width: 400px;
 }
 
 .CodeMirror {
@@ -43,6 +46,8 @@ h1.list-title {
 #main-container {
   display: flex;
   height: calc(100vh); /* subtract header height */
+  overflow-x: hidden;
+  min-width: 0;
 }
 
 .list-title-with-settings {
@@ -54,10 +59,13 @@ h1.list-title {
 
 #editor-toolbar {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 5px 10px;
   background-color: #2a2a2a;
   border-bottom: 1px solid #444;
+  min-width: 250px;
 }
 
 #editor-toolbar.hidden {
@@ -69,7 +77,7 @@ h1.list-title {
   border: none;
   color: #ccc;
   font-size: 2rem;
-  padding: 0.3rem 1.5rem;
+  padding: 0.3rem 20px;
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -82,10 +90,25 @@ h1.list-title {
   font-size: 1.3rem;
 }
 
+#collapse-sidebar-button {
+  font-size: 1.3rem;
+  margin-left: 5px;
+}
+
+#expand-sidebar-button {
+  font-size: 1.3rem;
+  margin-right: 10px;
+}
+
+#expand-sidebar-button.hidden {
+  display: none;
+}
+
 
 
 #file-list-wrapper {
   width: 300px;
+  min-width: 300px;
   background: #2c2c2c;
   padding: 10px;
   color: #fff;
@@ -94,6 +117,10 @@ h1.list-title {
 
   display: flex;
   flex-direction: column;
+}
+
+#file-list-wrapper.collapsed {
+  display: none;
 }
 
 #file-list {
