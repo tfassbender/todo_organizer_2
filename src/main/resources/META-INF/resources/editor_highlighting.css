@@ -53,3 +53,24 @@
   color: #888888 !important;
   font-style: italic;
 }
+
+
+/* Headlines at desktop size leave only a handful of characters per line on a
+   phone, so scale them down there. */
+@media (max-width: 768px) {
+  .line-headline-1 {
+    font-size: 24px !important;
+  }
+
+  .line-headline-2 {
+    font-size: 20px !important;
+  }
+
+  .line-headline-3 {
+    font-size: 18px !important;
+  }
+
+  .line-headline-4 {
+    font-size: 16px !important;
+  }
+}

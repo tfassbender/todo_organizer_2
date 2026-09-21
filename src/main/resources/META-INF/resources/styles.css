@@ -5,6 +5,7 @@ body {
   color: #eee;
   font-family: sans-serif;
   height: 100vh;
+  height: 100dvh; /* dvh excludes the mobile browser chrome, so nothing is cut off */
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -45,7 +46,8 @@ h1.list-title {
 
 #main-container {
   display: flex;
-  height: calc(100vh); /* subtract header height */
+  height: 100vh;
+  height: 100dvh; /* dvh excludes the mobile browser chrome, so nothing is cut off */
   overflow-x: hidden;
   min-width: 0;
 }
@@ -405,4 +407,71 @@ mark {
 }
 .auth-status.error {
     color: red;
+}
+
+
+
+/* Touch devices have no hover state, so the close button would never appear
+   and a file could not be closed at all. */
+@media (hover: none) {
+  .file-close-button {
+    display: inline;
+  }
+}
+
+
+
+/* ----- Mobile layout ----- */
+@media (max-width: 768px) {
+  /* The sidebar turns into an overlay drawer instead of a fixed column, so the
+     editor gets the full screen width. Opening and closing it reuses the
+     existing collapse/expand buttons. */
+  #file-list-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 500;
+    width: 85vw;
+    min-width: 0;
+    max-width: 320px;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.6);
+  }
+
+  #editor-wrapper {
+    min-width: 0;
+    padding: 0.5em;
+  }
+
+  /* Keep the toolbar on one scrollable row instead of wrapping into three */
+  #editor-toolbar {
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 4px 6px;
+  }
+
+  /* With the toggle buttons switched off the bar must still show the button
+     that reopens the sidebar - otherwise the drawer is unreachable. */
+  #editor-toolbar.hidden {
+    display: flex;
+  }
+
+  #editor-toolbar.hidden .editor-toolbar-btn {
+    display: none;
+  }
+
+  .editor-toolbar-btn {
+    font-size: 1.4rem;
+    padding: 0.3rem 12px;
+  }
+
+  .modal {
+    width: min(90vw, 300px);
+  }
+
+  #search-results {
+    max-height: 35vh;
+  }
 }

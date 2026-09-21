@@ -149,6 +149,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("toggle-dash-btn").addEventListener("click", () => {
       toggleLinePrefix(window.cm, "/- ");
   });
+
+  // On small screens the sidebar overlays the editor, so it starts collapsed
+  if (window.matchMedia("(max-width: 768px)").matches) {
+    collapseSidebar();
+  }
 });
 
 function showNewFileModal() {

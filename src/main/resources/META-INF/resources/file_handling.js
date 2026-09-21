@@ -129,6 +129,11 @@ function initializeDragAndDrop() {
   new Sortable(fileList, {
     animation: 150,
     ghostClass: 'drag-ghost',
+    // Without a delay every attempt to scroll the file list on a touch screen
+    // starts a drag instead. Long press to reorder, short touch to scroll.
+    delay: 300,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 5,
     onEnd: (evt) => {
       // Grab the new order from the DOM
       const newOrder = Array.from(fileList.children).map(item => {

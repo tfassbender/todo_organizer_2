@@ -13,6 +13,7 @@ A lightweight, web-based TODO manager with a clean UI, built using Quarkus for t
 - Drag-and-drop to reorder TODO files  
 - Persist opened files and settings on the backend  
 - Clean and responsive interface with CodeMirror editor  
+- Works on phones and tablets — the file list becomes a slide-in drawer  
 - Backend built with Quarkus (Java) and REST API  
 - Simple deployment — single JAR file  
 
@@ -51,7 +52,19 @@ Or use the provided startup script in the scripts directory.
 - Create new TODO files via the "+" button
 - Drag and drop files to reorder your list
 - Click the "open" button to add more TODOs from existing files
-- Close files with the close "×" button that appears on hover
+- Close files with the close "×" button that appears on hover (always visible on touch devices)
+
+### On mobile
+
+On small screens (up to 768px) the layout adapts automatically:
+
+- The file list is hidden by default and opens as a drawer over the editor —
+  use the `»` button in the toolbar to open it and the `«` button in the drawer
+  to close it again
+- The line-prefix toggle buttons are shown by default, so the keyboard shortcuts
+  are not needed. They can be turned off in the settings
+- Reordering files works with a long press instead of an immediate drag, so the
+  file list can still be scrolled normally
 
 ### Highlighting
 
