@@ -143,11 +143,22 @@ function escapeRegex(s) {
 }
 
 function debounce(func, delay) {
-  let timeout;
-  return function(...args) {
+  let timeout = null;
+  const debounced = function(...args) {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), delay);
+    timeout = setTimeout(() => {
+      timeout = null;
+      func.apply(this, args);
+    }, delay);
   };
+  // Run a pending call immediately, e.g. before the tab is hidden and possibly frozen by the browser
+  debounced.flush = function() {
+    if (timeout === null) return;
+    clearTimeout(timeout);
+    timeout = null;
+    func();
+  };
+  return debounced;
 }
 
 const debouncedSave = debounce(() => {
@@ -159,7 +170,10 @@ const debouncedSave = debounce(() => {
 addHighlighting();
 
 // Run on change
-editor.on('change', () => {
-  debouncedSave();
+editor.on('change', (cm, change) => {
+  // Content set via setValue() was just loaded from the backend, so there is nothing to save
+  if (change.origin !== 'setValue') {
+    debouncedSave();
+  }
   addHighlighting();
 });

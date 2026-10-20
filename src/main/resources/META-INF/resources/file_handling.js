@@ -101,17 +101,8 @@ function sendContentToBackend(content) {
   })
   .then(parseJsonResponse)
   .then(dto => {
-    // Update the icon in the file list UI
-    const fileItem = document.querySelector(`.file-item[data-filename="${CSS.escape(dto.filename)}"]`);
-    if (fileItem && dto.icon) {
-      fileItem.querySelector('.file-icon').src = "icons/" + dto.icon;
-    }
-
-    // Manually update the content in the openedFiles list
-    const updatedFile = openedFiles.find(f => f.filename === dto.filename);
-    if (updatedFile) {
-      updatedFile.content = content;
-    }
+    updateFileIcon(dto);
+    updateCachedContent(dto.filename, content);
 
     // Also update currentFile if it's the one that was saved
     if (currentFile.filename === dto.filename) {
@@ -122,6 +113,60 @@ function sendContentToBackend(content) {
     console.log("Error saving file:", err);
     showErrorModal("Failed to save changes: " + err.message);
   });
+}
+
+function updateFileIcon(dto) {
+  const fileItem = document.querySelector(`.file-item[data-filename="${CSS.escape(dto.filename)}"]`);
+  if (fileItem && dto.icon) {
+    fileItem.querySelector('.file-icon').src = "icons/" + dto.icon;
+  }
+}
+
+// Keep the openedFiles cache in sync, the search works on it
+function updateCachedContent(filename, content) {
+  const cachedFile = openedFiles.find(f => f.filename === filename);
+  if (cachedFile) {
+    cachedFile.content = content;
+  }
+}
+
+// Fetches the current file again, because it might have been edited on another device in the meantime
+function reloadCurrentFile() {
+  if (!currentFile) return;
+
+  const filename = currentFile.filename;
+  const generation = editor.changeGeneration();
+
+  fetch(`/todos/${filename}`)
+    .then(parseJsonResponse)
+    .then(dto => {
+      // The user switched files or already typed while the request was running - don't overwrite that
+      if (!currentFile || currentFile.filename !== filename || !editor.isClean(generation)) return;
+
+      updateFileIcon(dto);
+      updateCachedContent(dto.filename, dto.content);
+      currentFile.content = dto.content;
+
+      if (dto.content !== editor.getValue()) {
+        replaceEditorContentKeepingPosition(dto.content);
+      }
+    })
+    .catch(err => {
+      console.log("Error reloading file:", err);
+      showErrorModal("Failed to reload file: " + err.message);
+    });
+}
+
+function replaceEditorContentKeepingPosition(content) {
+  const cursor = editor.getCursor();
+  const scrollInfo = editor.getScrollInfo();
+
+  editor.setValue(content);
+  // Undoing past the reload would bring back the outdated content and save it
+  editor.clearHistory();
+
+  editor.setCursor(cursor);
+  editor.scrollTo(scrollInfo.left, scrollInfo.top);
 }
 
 function initializeDragAndDrop() {
@@ -183,5 +228,22 @@ async function parseJsonResponse(res) {
   }
 }
 
+
+// Only fires when the tab is shown or hidden (switching tabs/apps, unlocking the phone), not on clicks
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    reloadCurrentFile();
+  } else {
+    // Mobile browsers may freeze a hidden tab before the debounce timer fires
+    debouncedSave.flush();
+  }
+});
+
+// A page restored from the back/forward cache doesn't always fire visibilitychange
+window.addEventListener('pageshow', event => {
+  if (event.persisted) {
+    reloadCurrentFile();
+  }
+});
 
 loadFileList();
